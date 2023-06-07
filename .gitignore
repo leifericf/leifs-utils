@@ -16,6 +16,9 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
+.calva
+.clj-kondo
+.lsp
 
 ### macOS ###
 # General
@@ -25,7 +28,6 @@ pom.xml.asc
 
 # Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*
