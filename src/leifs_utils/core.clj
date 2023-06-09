@@ -22,7 +22,7 @@
                    (json/parse-string true)))
 
 (defn get-all-repo-data
-  "Get Git repo URLs for an Azure DevOps organization."
+  "Get Git repos for an Azure DevOps organization."
   [] (let [org-url (get-secret :azure-devops-org-url)]
        (->> org-url
             (get-project-data)
