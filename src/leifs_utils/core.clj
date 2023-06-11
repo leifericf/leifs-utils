@@ -5,11 +5,13 @@
             [clojure.edn :as edn]))
 
 (defn get-secret
-  "Load secret from file."
+  ≈
   [key]
   (key (edn/read-string (slurp "secrets.edn"))))
 
-(defn sh-out->json [shell-command]
+(defn sh-out->json
+  "Heper function to call Azure DevOps CLI and get output as JSON."
+  [shell-command]
   (-> (process/sh shell-command)
       :out
       (json/parse-string true)))
