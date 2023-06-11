@@ -31,7 +31,7 @@
   (->> (get-secret :azure-devops-org-url)
        (get-project-data)
        (keep :id)
-       (map get-project-repo-data)))
+       (run! get-project-repo-data)))
 
 (defn clone-repo
   "Clone a Git repo to a destination path."
@@ -47,6 +47,6 @@
   (->> (get-all-repo-data)
        (tree-seq coll? identity)
        (keep :sshUrl)
-       (map clone-repo)))
+       (run! clone-repo)))
 
 (clone-all-repos)
