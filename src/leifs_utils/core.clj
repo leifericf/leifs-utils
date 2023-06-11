@@ -5,7 +5,6 @@
             [clojure.edn :as edn]))
 
 (defn get-secret
-  ≈
   [key]
   (key (edn/read-string (slurp "secrets.edn"))))
 
