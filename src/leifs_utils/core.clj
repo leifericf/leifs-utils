@@ -33,6 +33,7 @@
 (defn clone-repo
   ([repo-url]
    (clone-repo repo-url (str (file/home) (get-secret :repo-root-dir))))
+
   ([repo-url dest-path]
    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
    (process/sh {:dir dest-path} "git clone" repo-url)))
