@@ -27,7 +27,8 @@
   (->> (get-secret :azure-devops-org-url)
        (get-project-data)
        (keep :id)
-       (run! get-project-repo-data)))
+       (pmap get-project-repo-data)
+       (doall)))
 
 (defn clone-repo
   ([repo-url]
@@ -41,6 +42,7 @@
   (->> (get-all-repo-data)
        (tree-seq coll? identity)
        (keep :sshUrl)
-       (run! clone-repo)))
+       (pmap clone-repo)
+       (doall)))
 
 (clone-all-repos)
