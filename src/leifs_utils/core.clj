@@ -16,7 +16,7 @@
 
 (defn get-project-data
   [org-url]
-  (:value (sh-out->json (str "az devops project list --org " org-url))))
+  (sh-out->json (str "az devops project list --org " org-url)))
 
 (defn get-project-repo-data
   [project-id]
@@ -26,6 +26,7 @@
   []
   (->> (get-secret :azure-devops-org-url)
        (get-project-data)
+       (tree-seq coll? identity)
        (keep :id)
        (pmap get-project-repo-data)
        (doall)))
