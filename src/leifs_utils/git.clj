@@ -1,4 +1,4 @@
-(ns leifs-utils.core
+(ns leifs-utils.git
   (:require [babashka.fs :as file]
             [babashka.process :as process]
             [cheshire.core :as json]
