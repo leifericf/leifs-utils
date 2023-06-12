@@ -14,26 +14,35 @@
       :out
       (json/parse-string true)))
 
-(defn get-project-data
+(defn get-devops-project-data
   [org-url]
   (sh-out->json (str "az devops project list --org " org-url)))
 
-(defn get-project-repo-data
+(defn get-devops-project-repo-data
   [project-id]
   (sh-out->json (str "az repos list --project " project-id)))
 
-(defn get-all-repo-data
-  []
-  (->> (get-secret :azure-devops-org-url)
-       (get-project-data)
-       (tree-seq coll? identity)
-       (keep :id)
-       (pmap get-project-repo-data)
-       (doall)))
+(defn get-devops-repo-data
+  ([] (get-devops-repo-data (get-secret :azure/devops-org-url)))
+
+  ([devops-org-url]
+   (->> devops-org-url
+        (get-devops-project-data)
+        (tree-seq coll? identity)
+        (keep :id)
+        (pmap get-devops-project-repo-data)
+        (doall))))
+
+(defn get-github-repo-data
+  ([]
+   (get-github-repo-data (get-secret :github/org-name)))
+
+  ([org-name]
+   (sh-out->json (str "gh repo list " org-name " --language C# --source --no-archived --limit 500 --json sshUrl"))))
 
 (defn clone-repo
   ([repo-url]
-   (clone-repo repo-url (str (file/home) (get-secret :repo-root-dir))))
+   (clone-repo repo-url (str (file/home) (get-secret :local/repo-root-dir))))
 
   ([repo-url dest-path]
    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
@@ -41,8 +50,12 @@
 
 (defn clone-all-repos
   []
-  (->> (get-all-repo-data)
+  (->> (get-devops-repo-data)
        (tree-seq coll? identity)
+       (keep :sshUrl)
+       (pmap clone-repo)
+       (doall))
+  (->> (get-github-repo-data)
        (keep :sshUrl)
        (pmap clone-repo)
        (doall)))
