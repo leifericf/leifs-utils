@@ -9,7 +9,7 @@
   (key (edn/read-string (slurp "secrets.edn"))))
 
 (defn sh-out->json
-  "Heper function to call Azure DevOps CLI and get output as JSON."
+  "Heper function to call shell command and get output as JSON."
   [shell-command]
   (-> (process/sh shell-command)
       :out
