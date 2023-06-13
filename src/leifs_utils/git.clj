@@ -48,14 +48,16 @@
     (process/sh {:dir dest-path} "git clone" repo-url)))
 
 (defn clone-all-repos
-  []
-  (->> (get-devops-repo-data)
-       (extract-key :sshUrl)
-       (pmap clone-repo)
-       (doall))
-  (->> (get-github-repo-data)
+  [repos]
+  (->> repos
        (extract-key :sshUrl)
        (pmap clone-repo)
        (doall)))
 
-(clone-all-repos)
+(defn run []
+  (let [devops-repos (get-devops-repo-data)
+        github-repos (get-github-repo-data)]
+    (clone-all-repos devops-repos)
+    (clone-all-repos github-repos)))
+
+(run)
