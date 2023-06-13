@@ -7,8 +7,8 @@
 (def settings (edn/read-string (slurp "settings.edn")))
 
 (defn sh-out->json
-  [shell-command]
-  (-> (process/sh shell-command)
+  [& args]
+  (-> (apply process/sh args)
       :out
       (json/parse-string true)))
 
@@ -19,11 +19,13 @@
 
 (defn get-devops-project-data
   [org-url]
-  (sh-out->json (str "az devops project list --org " org-url)))
+  (sh-out->json "az" "devops" "project" "list"
+                "--org" org-url))
 
 (defn get-devops-project-repo-data
   [project-id]
-  (sh-out->json (str "az repos list --project " project-id)))
+  (sh-out->json "az" "repos" "list"
+                "--project" project-id))
 
 (defn get-devops-repo-data
   []
@@ -35,9 +37,12 @@
 
 (defn get-github-repo-data
   []
-  (sh-out->json (str "gh repo list " (:github/org-name settings)
-                     " --language " (:github/repo-language-filter settings)
-                     " --source --no-archived --limit 1000 --json sshUrl")))
+  (sh-out->json "gh" "repo" "list" (:github/org-name settings)
+                "--language" (:github/repo-language-filter settings)
+                "--source"
+                "--no-archived"
+                "--limit" "1000"
+                "--json" "sshUrl"))
 
 (defn clone-repo
   [repo-url]
