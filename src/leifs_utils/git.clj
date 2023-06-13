@@ -55,9 +55,7 @@
        (doall)))
 
 (defn run []
-  (let [devops-repos (get-devops-repo-data)
-        github-repos (get-github-repo-data)]
-    (clone-all-repos devops-repos)
-    (clone-all-repos github-repos)))
+  (clone-all-repos (get-devops-repo-data))
+  (clone-all-repos (get-github-repo-data)))
 
 (run)
