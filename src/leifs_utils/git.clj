@@ -1,12 +1,12 @@
 (ns leifs-utils.git
-  (:require [babashka.fs :as file]
-            [babashka.process :as process]
+  (:require [babashka.process :as process]
             [cheshire.core :as json]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [babashka.fs :as file]))
 
 (defn get-secret
   [key]
-  (key (edn/read-string (slurp "secrets.edn"))))
+  (key (edn/read-string (slurp "settings.edn"))))
 
 (defn sh-out->json
   [shell-command]
@@ -38,7 +38,9 @@
    (get-github-repo-data (get-secret :github/org-name)))
 
   ([org-name]
-   (sh-out->json (str "gh repo list " org-name " --language C# --source --no-archived --limit 500 --json sshUrl"))))
+   (sh-out->json (str "gh repo list " org-name
+                      " --language " (get-secret :github/repo-language-filter)
+                      " --source --no-archived --limit 1000 --json sshUrl"))))
 
 (defn clone-repo
   ([repo-url]

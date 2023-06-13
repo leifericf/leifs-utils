@@ -19,7 +19,7 @@ pom.xml.asc
 .calva
 .clj-kondo
 .lsp
-secrets.edn
+settings.edn
 
 ### macOS ###
 # General
