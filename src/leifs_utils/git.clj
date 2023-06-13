@@ -14,6 +14,11 @@
       :out
       (json/parse-string true)))
 
+(defn extract-key [key collection]
+  (->> collection
+       (tree-seq coll? identity)
+       (keep key)))
+
 (defn get-devops-project-data
   [org-url]
   (sh-out->json (str "az devops project list --org " org-url)))
@@ -26,8 +31,7 @@
   []
   (->> (get-setting :azure/devops-org-url)
        (get-devops-project-data)
-       (tree-seq coll? identity)
-       (keep :id)
+       (extract-key :id)
        (pmap get-devops-project-repo-data)
        (doall)))
 
@@ -46,12 +50,11 @@
 (defn clone-all-repos
   []
   (->> (get-devops-repo-data)
-       (tree-seq coll? identity)
-       (keep :sshUrl)
+       (extract-key :sshUrl)
        (pmap clone-repo)
        (doall))
   (->> (get-github-repo-data)
-       (keep :sshUrl)
+       (extract-key :sshUrl)
        (pmap clone-repo)
        (doall)))
 
