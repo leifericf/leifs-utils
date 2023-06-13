@@ -20,6 +20,7 @@ pom.xml.asc
 .clj-kondo
 .lsp
 settings.edn
+repos
 
 ### macOS ###
 # General
