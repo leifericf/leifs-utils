@@ -4,7 +4,7 @@
             [clojure.edn :as edn]
             [babashka.fs :as file]))
 
-(defn get-secret
+(defn get-setting
   [key]
   (key (edn/read-string (slurp "settings.edn"))))
 
@@ -23,7 +23,7 @@
   (sh-out->json (str "az repos list --project " project-id)))
 
 (defn get-devops-repo-data
-  ([] (get-devops-repo-data (get-secret :azure/devops-org-url)))
+  ([] (get-devops-repo-data (get-setting :azure/devops-org-url)))
 
   ([devops-org-url]
    (->> devops-org-url
@@ -35,16 +35,16 @@
 
 (defn get-github-repo-data
   ([]
-   (get-github-repo-data (get-secret :github/org-name)))
+   (get-github-repo-data (get-setting :github/org-name)))
 
   ([org-name]
    (sh-out->json (str "gh repo list " org-name
-                      " --language " (get-secret :github/repo-language-filter)
+                      " --language " (get-setting :github/repo-language-filter)
                       " --source --no-archived --limit 1000 --json sshUrl"))))
 
 (defn clone-repo
   ([repo-url]
-   (clone-repo repo-url (str (file/home) (get-secret :local/repo-root-dir))))
+   (clone-repo repo-url (str (file/home) (get-setting :local/repo-root-dir))))
 
   ([repo-url dest-path]
    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
