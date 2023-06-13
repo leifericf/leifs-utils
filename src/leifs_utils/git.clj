@@ -23,32 +23,25 @@
   (sh-out->json (str "az repos list --project " project-id)))
 
 (defn get-devops-repo-data
-  ([] (get-devops-repo-data (get-setting :azure/devops-org-url)))
-
-  ([devops-org-url]
-   (->> devops-org-url
-        (get-devops-project-data)
-        (tree-seq coll? identity)
-        (keep :id)
-        (pmap get-devops-project-repo-data)
-        (doall))))
+  []
+  (->> (get-setting :azure/devops-org-url)
+       (get-devops-project-data)
+       (tree-seq coll? identity)
+       (keep :id)
+       (pmap get-devops-project-repo-data)
+       (doall)))
 
 (defn get-github-repo-data
-  ([]
-   (get-github-repo-data (get-setting :github/org-name)))
-
-  ([org-name]
-   (sh-out->json (str "gh repo list " org-name
-                      " --language " (get-setting :github/repo-language-filter)
-                      " --source --no-archived --limit 1000 --json sshUrl"))))
+  []
+  (sh-out->json (str "gh repo list " (get-setting :github/org-name)
+                     " --language " (get-setting :github/repo-language-filter)
+                     " --source --no-archived --limit 1000 --json sshUrl")))
 
 (defn clone-repo
-  ([repo-url]
-   (clone-repo repo-url (str (file/home) (get-setting :local/repo-root-dir))))
-
-  ([repo-url dest-path]
-   (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
-   (process/sh {:dir dest-path} "git clone" repo-url)))
+  [repo-url]
+  (let [dest-path (str (file/home) (get-setting :local/repo-root-dir))]
+    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
+    (process/sh {:dir dest-path} "git clone" repo-url)))
 
 (defn clone-all-repos
   []
