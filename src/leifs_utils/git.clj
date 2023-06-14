@@ -58,7 +58,7 @@
        (pmap clone-repo)
        (doall)))
 
-; TODO: Create a Task from this function.
+; TODO: Create a Babashka task from this function.
 (defn run []
   (clone-all-repos (get-devops-repo-data))
   (clone-all-repos (get-github-repo-data)))
@@ -74,6 +74,6 @@
   (-> (process/sh {:dir path} "git" command)
       :out))
 
-; TODO: Create one or more tasks to run various Git command "workflows."
+; TODO: Create one or more Babashka tasks to run various Git command "workflows."
 (->> (find-repo-paths (str (babashka.fs/home) (:local/repo-root-dir settings)))
      (map (partial run-git-command "status")))
