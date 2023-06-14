@@ -33,8 +33,7 @@
   (->> (:azure/devops-org-url settings)
        (get-devops-project-data)
        (extract-key :id)
-       (pmap get-devops-project-repo-data)
-       (doall)))
+       (map get-devops-project-repo-data)))
 
 (defn get-github-repo-data
   []
@@ -61,6 +60,8 @@
 (defn run []
   (clone-all-repos (get-devops-repo-data))
   (clone-all-repos (get-github-repo-data)))
+
+(run)
 
 (defn find-repo-paths
   [root-path]
