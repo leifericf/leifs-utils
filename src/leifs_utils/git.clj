@@ -48,7 +48,7 @@
   [repo-url]
   (let [dest-path (str (file/home) (:local/repo-root-dir settings))]
     (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
-    (process/sh {:dir dest-path} "git clone" repo-url)))
+    (process/sh {:dir dest-path} "git" "clone" repo-url)))
 
 (defn clone-all-repos
   [repos]
