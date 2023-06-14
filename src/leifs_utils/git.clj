@@ -33,7 +33,8 @@
   (->> (:azure/devops-org-url settings)
        (get-devops-project-data)
        (extract-key :id)
-       (map get-devops-project-repo-data)))
+       (pmap get-devops-project-repo-data)
+       (doall)))
 
 (defn get-github-repo-data
   []
@@ -61,8 +62,6 @@
   (clone-all-repos (get-devops-repo-data))
   (clone-all-repos (get-github-repo-data)))
 
-(run)
-
 (defn find-repo-paths
   [root-path]
   (->> (file/glob root-path "**.git" {:hidden true})
@@ -73,6 +72,8 @@
   [path]
   (-> (process/sh {:dir path} "git" "status")
       :out))
+
+(run)
 
 (->> (find-repo-paths (str (file/home) (:local/repo-root-dir settings)))
      (map run-git-command)
