@@ -69,12 +69,9 @@
        (map str)))
 
 (defn run-git-command
-  [path]
-  (-> (process/sh {:dir path} "git" "status")
+  [command path]
+  (-> (process/sh {:dir path} "git" command)
       :out))
 
-(run)
-
-(->> (find-repo-paths (str (file/home) (:local/repo-root-dir settings)))
-     (map run-git-command)
-     (println))
+(->> (find-repo-paths (str (babashka.fs/home) (:local/repo-root-dir settings)))
+     (map (partial run-git-command "status")))
