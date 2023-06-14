@@ -1,8 +1,9 @@
 (ns leifs-utils.git
-  (:require [babashka.process :as process]
+  (:require [babashka.fs :as file]
             [cheshire.core :as json]
             [clojure.edn :as edn]
-            [babashka.fs :as file]))
+            [clojure.string :as cs]
+            [babashka.process :as process]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
@@ -61,4 +62,17 @@
   (clone-all-repos (get-devops-repo-data))
   (clone-all-repos (get-github-repo-data)))
 
-(run)
+(defn find-repo-paths
+  [root-path]
+  (->> (file/glob root-path "**.git" {:hidden true})
+       (map file/parent)
+       (map str)))
+
+(defn run-git-command
+  [path]
+  (-> (process/sh {:dir path} "git" "status")
+      :out))
+
+(->> (find-repo-paths (str (file/home) (:local/repo-root-dir settings)))
+     (map run-git-command)
+     (println))
