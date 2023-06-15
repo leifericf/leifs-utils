@@ -6,10 +6,14 @@
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
+(defn sh->out
+  [opts & args]
+  (-> (apply process/sh opts args)
+      :out))
+
 (defn sh-out->json
-  [& args]
-  (-> (apply process/sh args)
-      :out
+  [opts & args]
+  (-> (sh->out opts args)
       (json/parse-string true)))
 
 (defn extract-key [key collection]
