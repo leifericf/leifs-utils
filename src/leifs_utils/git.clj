@@ -36,8 +36,7 @@
   (->> (:azure/devops-org-url settings)
        (get-devops-project-data)
        (extract-key :id)
-       (pmap get-devops-project-repo-data)
-       (doall)))
+       (pmap get-devops-project-repo-data)))
 
 (defn get-github-repo-data
   []
@@ -58,8 +57,7 @@
   [repos]
   (->> repos
        (extract-key :sshUrl)
-       (pmap clone-repo)
-       (doall)))
+       (pmap clone-repo)))
 
 ; TODO: Create a Babashka task from this function.
 (defn run []
