@@ -2,7 +2,6 @@
   (:require [babashka.fs :as file]
             [cheshire.core :as json]
             [clojure.edn :as edn]
-            [clojure.string :as cs]
             [babashka.process :as process]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
