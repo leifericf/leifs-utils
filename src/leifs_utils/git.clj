@@ -11,7 +11,6 @@
 
 (defn sh->out
   [opts & args]
-  (println opts (flatten args))
   (-> (apply process/sh opts (flatten args))
       :out))
 
