@@ -1,8 +1,10 @@
 (ns leifs-utils.git
   (:require [babashka.fs :as file]
+            [babashka.process :as process]
             [cheshire.core :as json]
             [clojure.edn :as edn]
-            [babashka.process :as process]))
+            [clojure.java.io :as io]
+            [clojure.string :as str]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
@@ -77,3 +79,17 @@
 (defn git-status-all []
   (->> (find-repo-paths (get-repo-root-path))
        (map #(sh->out {:dir %} "git" "status"))))
+
+(defn find-files [root-path file-types]
+  (->> (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types))))
+       (map str)))
+
+(defn search-in-file [file-path pattern]
+  (with-open [reader (io/reader file-path)]
+    (->> reader
+         (line-seq)
+         (filter #(str/includes? % pattern))
+         (doall))))
+
+(->> (find-files (get-repo-root-path) ["json" "yaml"])
+     (map #(search-in-file % "test")))
