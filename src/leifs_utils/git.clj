@@ -70,11 +70,6 @@
        (map file/parent)
        (map str)))
 
-(defn run-git-command
-  [command path]
-  (-> (process/sh {:dir path} "git" command)
-      :out))
-
 ; TODO: Create one or more Babashka tasks to run various Git command "workflows."
 (->> (find-repo-paths (str (babashka.fs/home) (:local/repo-root-dir settings)))
-     (map (partial run-git-command "status")))
+     (map #(sh->out {:dir %} "git" "status")))
