@@ -74,5 +74,6 @@
        (map str)))
 
 ; TODO: Create one or more Babashka tasks to run various Git command "workflows."
-(->> (find-repo-paths (get-repo-root-path))
-     (map #(sh->out {:dir %} "git" "status")))
+(defn git-status-all []
+  (->> (find-repo-paths (get-repo-root-path))
+       (map #(sh->out {:dir %} "git" "status"))))
