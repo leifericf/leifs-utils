@@ -6,6 +6,9 @@
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
+(defn get-repo-root-path []
+  (str (babashka.fs/home) (:local/repo-root-dir settings)))
+
 (defn sh->out
   [opts & args]
   (println opts (flatten args))
@@ -50,9 +53,9 @@
 
 (defn clone-repo
   [repo-url]
-  (let [dest-path (str (file/home) (:local/repo-root-dir settings))]
-    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
-    (sh->out {:dir dest-path} "git" "clone" repo-url)))
+  (let [path (get-repo-root-path)]
+    (if-not (file/exists? path) (file/create-dir path) nil)
+    (sh->out {:dir path} "git" "clone" repo-url)))
 
 (defn clone-all-repos
   [repos]
@@ -66,11 +69,11 @@
   (clone-all-repos (get-github-repo-data)))
 
 (defn find-repo-paths
-  [root-path]
-  (->> (file/glob root-path "**.git" {:hidden true})
+  [search-path]
+  (->> (file/glob search-path "**.git" {:hidden true})
        (map file/parent)
        (map str)))
 
 ; TODO: Create one or more Babashka tasks to run various Git command "workflows."
-(->> (find-repo-paths (str (babashka.fs/home) (:local/repo-root-dir settings)))
+(->> (find-repo-paths (get-repo-root-path))
      (map #(sh->out {:dir %} "git" "status")))
