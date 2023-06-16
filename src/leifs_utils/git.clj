@@ -8,7 +8,8 @@
 
 (defn sh->out
   [opts & args]
-  (-> (apply process/sh opts args)
+  (println opts (flatten args))
+  (-> (apply process/sh opts (flatten args))
       :out))
 
 (defn sh-out->json
@@ -51,7 +52,7 @@
   [repo-url]
   (let [dest-path (str (file/home) (:local/repo-root-dir settings))]
     (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
-    (process/sh {:dir dest-path} "git" "clone" repo-url)))
+    (sh->out {:dir dest-path} "git" "clone" repo-url)))
 
 (defn clone-all-repos
   [repos]
