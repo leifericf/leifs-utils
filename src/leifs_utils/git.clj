@@ -74,17 +74,16 @@
 (defn find-repo-paths
   [search-path]
   (->> (file/glob search-path "**.git" {:hidden true})
-       (map file/parent)
-       (map str)))
+       (reduce #(conj %1 (str (file/parent %2))) [])))
 
 ; TODO: Create one or more Babashka tasks to run various Git command "workflows."
 (defn git-status-all []
   (->> (find-repo-paths (get-repo-root-path))
-       (map #(sh->out {:dir %} "git" "status"))))
+       (reduce #(conj %1 (sh->out {:dir %2} "git" "status")) [])))
 
 (defn find-files [root-path file-types]
   (->> (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types))))
-       (map str)))
+       (reduce #(conj %1 (str %2)) [])))
 
 (defn search-in-file [file-path pattern]
   (with-open [reader (io/reader file-path)]
@@ -94,4 +93,4 @@
          (doall))))
 
 (->> (find-files (get-repo-root-path) ["json" "yaml"])
-     (map #(search-in-file % "test")))
+     (reduce #(conj %1 (search-in-file %2 "test")) []))
