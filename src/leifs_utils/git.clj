@@ -92,22 +92,14 @@
 
 (defn find-in-file [file-path pattern]
   (with-open [reader (io/reader file-path)]
-    (let [lines (line-seq reader)]
-      (loop [line-num 1
-             remaining-lines lines
-             results []]
-        (if-let [line (first remaining-lines)]
-          (let [index (.indexOf line pattern)]
-            (if (not= -1 index)
-              (recur (inc line-num) (rest remaining-lines)
-                     (conj results {:file-path file-path
-                                    :line line-num
-                                    :column (inc index)}))
-              (recur (inc line-num) (rest remaining-lines) results)))
-          results)))))
+    (->> (line-seq reader)
+         (keep-indexed #(when (str/includes? %2 pattern)
+                          {:path file-path
+                           :line (inc %1)
+                           :column (inc (.indexOf (str %2) pattern))}))
+         (into []))))
 
 (->> (find-files (get-repo-root-path) ["csproj"])
      (map str)
      (pmap #(find-in-file % "netcoreapp3.1"))
-     (remove empty?)
-     (doall))
+     (remove empty?))
