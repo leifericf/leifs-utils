@@ -13,12 +13,12 @@
 
 (defn sh->out
   [opts & args]
-  (-> (apply process/sh opts (flatten args))
+  (-> (apply process/sh opts args)
       :out))
 
 (defn sh-out->json
   [opts & args]
-  (-> (sh->out opts args)
+  (-> (apply sh->out opts args)
       (json/parse-string true)))
 
 (defn extract-key [key collection]
