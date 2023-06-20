@@ -88,15 +88,15 @@
         (doall))))
 
 (defn find-files [root-path file-types]
-  (->> (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types))))
-       (map str)))
+  (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types)))))
 
 (defn search-in-file [file-path pattern]
   (with-open [reader (io/reader file-path)]
-    (->> reader
-         (line-seq)
-         (filter #(str/includes? % pattern))
-         (doall))))
+    (if (some #(str/includes? % pattern) (line-seq reader))
+      file-path
+      nil)))
 
-(->> (find-files (get-repo-root-path) ["json" "yaml"])
-     (map #(search-in-file % "test")))
+(->> (find-files (get-repo-root-path) ["csproj"])
+     (map str)
+     (pmap #(search-in-file % "netcoreapp3.1"))
+     (remove nil?))
