@@ -103,4 +103,4 @@
 (->> (find-files (get-repo-root-path) ["csproj"])
      (map str)
      (pmap #(find-in-file % "netcoreapp3.1"))
-     (remove empty?))
+     (flatten))
