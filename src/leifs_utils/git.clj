@@ -91,9 +91,8 @@
   (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types)))))
 
 (defn find-in-file [file-path pattern]
-  (->> (io/file file-path)
-       (io/reader)
-       (line-seq)
+  (->> file-path
+       (file/read-all-lines)
        (map-indexed #(when (str/includes? %2 pattern)
                        {:directory (str (file/parent file-path))
                         :filename (file/file-name file-path)
@@ -102,7 +101,13 @@
                         :column (inc (.indexOf %2 pattern))}))
        (filter identity)))
 
-(->> (find-files (get-repo-root-path) ["csproj"])
-     (map str)
-     (pmap #(find-in-file % "netcoreapp3.1"))
-     (flatten))
+(defn find-in-files
+  ([file-types search-pattern]
+   (find-in-files (get-repo-root-path) file-types search-pattern))
+
+  ([root-path file-types search-pattern]
+   (->> (find-files root-path [file-types])
+        (pmap #(find-in-file % search-pattern))
+        (flatten))))
+
+(find-in-files "csproj" "netcoreapp3.1")
