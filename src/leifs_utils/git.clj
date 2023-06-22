@@ -88,7 +88,7 @@
         (doall))))
 
 (defn find-files [root-path file-types]
-  (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types)))))
+  (file/glob root-path (format "**.{%s}" (apply str/join "," file-types))))
 
 (defn find-in-file [file-path pattern]
   (->> file-path
@@ -111,4 +111,4 @@
         (pmap #(find-in-file % search-pattern))
         (flatten))))
 
-(find-in-files "csproj" "netcoreapp3.1")
+(find-in-files ["csproj"] "netcoreapp3.1")
