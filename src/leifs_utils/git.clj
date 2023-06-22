@@ -95,7 +95,9 @@
        (io/reader)
        (line-seq)
        (map-indexed #(when (str/includes? %2 pattern)
-                       {:path file-path
+                       {:directory (str (file/parent file-path))
+                        :filename (file/file-name file-path)
+                        :pattern pattern
                         :line (inc %1)
                         :column (inc (.indexOf %2 pattern))}))
        (filter identity)))
