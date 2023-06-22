@@ -3,7 +3,6 @@
             [babashka.process :as process]
             [cheshire.core :as json]
             [clojure.edn :as edn]
-            [clojure.java.io :as io]
             [clojure.string :as str]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
