@@ -91,13 +91,13 @@
   (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types)))))
 
 (defn find-in-file [file-path pattern]
-  (with-open [reader (io/reader file-path)]
-    (->> (line-seq reader)
-         (keep-indexed #(when (str/includes? %2 pattern)
-                          {:path file-path
-                           :line (inc %1)
-                           :column (inc (.indexOf (str %2) pattern))}))
-         (into []))))
+  (->> (with-open [reader (io/reader file-path)]
+         (doall (line-seq reader)))
+       (map-indexed #(when (str/includes? %2 pattern)
+                       {:path file-path
+                        :line (inc %1)
+                        :column (inc (.indexOf %2 pattern))}))
+       (filter identity)))
 
 (->> (find-files (get-repo-root-path) ["csproj"])
      (map str)
