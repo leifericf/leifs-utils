@@ -91,8 +91,9 @@
   (file/glob root-path (format "**.{%s}" (str/join "," (sort file-types)))))
 
 (defn find-in-file [file-path pattern]
-  (->> (with-open [reader (io/reader file-path)]
-         (doall (line-seq reader)))
+  (->> (io/file file-path)
+       (io/reader)
+       (line-seq)
        (map-indexed #(when (str/includes? %2 pattern)
                        {:path file-path
                         :line (inc %1)
