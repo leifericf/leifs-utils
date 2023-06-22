@@ -101,6 +101,7 @@
                         :column (inc (.indexOf %2 pattern))}))
        (filter identity)))
 
+; TODO: Create a Babashka task to search across all files of a given type.
 (defn find-in-files
   ([file-types search-pattern]
    (find-in-files (get-repo-root-path) file-types search-pattern))
