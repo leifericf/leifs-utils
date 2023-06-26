@@ -110,4 +110,22 @@
         (pmap #(find-in-file % search-pattern))
         (flatten))))
 
-(find-in-files ["csproj"] "netcoreapp3.1")
+(defn get-filename-prefix []
+  (.format (java.time.ZonedDateTime/now)
+           (java.time.format.DateTimeFormatter/ofPattern "yyyyMMdd-HHmmss")))
+
+(defn write-to-file
+  ([filename lines]
+   (let [default-path (str (babashka.fs/home) (:local/output-dir settings))]
+     (write-to-file filename lines default-path)))
+
+  ([filename lines path]
+   (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
+     (if-not (babashka.fs/exists? path) (file/create-dir path) nil)
+     (babashka.fs/write-lines (str path "/" prefixed-filename) [lines]))))
+
+(write-to-file "test.txt" "Some file content.")
+
+; TODO: Fix `write-to-file` so that it works with any input.
+(->> (find-in-files ["csproj"] "netcoreapp3.1")
+     (write-to-file "test.txt"))
