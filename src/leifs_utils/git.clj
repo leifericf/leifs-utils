@@ -122,10 +122,8 @@
   ([filename lines path]
    (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
      (if-not (file/exists? path) (file/create-dir path) nil)
-     (file/write-lines (str path "/" prefixed-filename) [lines]))))
+     (file/write-lines (str path "/" prefixed-filename) lines))))
 
-(write-to-file "test.txt" "Some file content.")
-
-; TODO: Fix `write-to-file` so that it works with any input.
 (->> (find-in-files ["csproj"] "netcoreapp3.1")
+     (map str)
      (write-to-file "test.txt"))
