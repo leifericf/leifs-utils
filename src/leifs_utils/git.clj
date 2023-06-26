@@ -117,9 +117,9 @@
 (defn write-to-file
   ([filename lines]
    (let [default-path (str (file/home) (:local/output-dir settings))]
-     (write-to-file filename lines default-path)))
+     (write-to-file default-path filename lines)))
 
-  ([filename lines path]
+  ([path filename lines]
    (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
      (if-not (file/exists? path) (file/create-dir path) nil)
      (file/write-lines (str path "/" prefixed-filename) lines))))
