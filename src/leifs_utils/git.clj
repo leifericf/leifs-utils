@@ -8,7 +8,7 @@
 (def settings (edn/read-string (slurp "settings.edn")))
 
 (defn get-repo-root-path []
-  (str (babashka.fs/home) (:local/repo-root-dir settings)))
+  (str (file/home) (:local/repo-root-dir settings)))
 
 (defn sh->out
   [opts & args]
@@ -116,13 +116,13 @@
 
 (defn write-to-file
   ([filename lines]
-   (let [default-path (str (babashka.fs/home) (:local/output-dir settings))]
+   (let [default-path (str (file/home) (:local/output-dir settings))]
      (write-to-file filename lines default-path)))
 
   ([filename lines path]
    (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
-     (if-not (babashka.fs/exists? path) (file/create-dir path) nil)
-     (babashka.fs/write-lines (str path "/" prefixed-filename) [lines]))))
+     (if-not (file/exists? path) (file/create-dir path) nil)
+     (file/write-lines (str path "/" prefixed-filename) [lines]))))
 
 (write-to-file "test.txt" "Some file content.")
 
