@@ -4,8 +4,8 @@
             [cheshire.core :as json]
             [clojure.edn :as edn]
             [clojure.string :as str])
-  (:import [java.time ZonedDateTime]
-           [java.time.format DateTimeFormatter]))
+  (:import  [java.time ZonedDateTime]
+            [java.time.format DateTimeFormatter]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
