@@ -3,7 +3,9 @@
             [babashka.process :as process]
             [cheshire.core :as json]
             [clojure.edn :as edn]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import [java.time ZonedDateTime]
+           [java.time.format DateTimeFormatter]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
@@ -110,9 +112,8 @@
         (pmap #(find-in-file % search-pattern))
         (flatten))))
 
-(defn get-filename-prefix []
-  (.format (java.time.ZonedDateTime/now)
-           (java.time.format.DateTimeFormatter/ofPattern "yyyyMMdd-HHmmss")))
+(defn get-filename-prefix [timestamp]
+  (.format timestamp (DateTimeFormatter/ofPattern "yyyyMMdd-HHmmss")))
 
 (defn write-to-file
   ([filename lines]
@@ -120,7 +121,7 @@
      (write-to-file default-path filename lines)))
 
   ([path filename lines]
-   (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
+   (let [prefixed-filename (format "%s_%s" (get-filename-prefix (ZonedDateTime/now)) filename)]
      (if-not (file/exists? path) (file/create-dirs path) nil)
      (file/write-lines (str path "/" prefixed-filename) lines))))
 
@@ -136,4 +137,6 @@
 
   (->> (find-in-files ["csproj"] "netcoreapp3.1")
        (map str)
-       (write-to-file "test.txt")))
+       (write-to-file "test.txt"))
+
+  (get-filename-prefix (ZonedDateTime/now)))
