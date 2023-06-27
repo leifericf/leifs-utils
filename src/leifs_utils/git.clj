@@ -121,9 +121,19 @@
 
   ([path filename lines]
    (let [prefixed-filename (format "%s_%s" (get-filename-prefix) filename)]
-     (if-not (file/exists? path) (file/create-dir path) nil)
+     (if-not (file/exists? path) (file/create-dirs path) nil)
      (file/write-lines (str path "/" prefixed-filename) lines))))
 
-(->> (find-in-files ["csproj"] "netcoreapp3.1")
-     (map str)
-     (write-to-file "test.txt"))
+(defn spit-file [path content]
+  (write-to-file (file/parent path) (file/file-name path) content))
+
+(comment
+  (write-to-file "test.txt" ["This is" "just a" "test"])
+
+  (write-to-file "/Users/leif/tmp/test" "test.txt" ["This is" "just a" "test"])
+
+  (spit-file "/Users/leif/tmp/test2/test.txt" ["This is" "just a" "test"])
+
+  (->> (find-in-files ["csproj"] "netcoreapp3.1")
+       (map str)
+       (write-to-file "test.txt")))
