@@ -9,3 +9,6 @@
 
 (defn get-repo-root-path []
   (str (file/home) (:local/repo-root-dir settings)))
+
+(comment
+  (get-repo-root-path))

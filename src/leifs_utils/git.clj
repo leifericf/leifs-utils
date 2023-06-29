@@ -63,6 +63,7 @@
 
 (comment
   (clone-all-repos (get-devops-repo-data))
+
   (clone-all-repos (get-github-repo-data))
 
   (run-git-command "status"))

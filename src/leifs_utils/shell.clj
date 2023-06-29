@@ -11,3 +11,8 @@
   [opts & args]
   (-> (apply sh->out opts args)
       (json/parse-string true)))
+
+(comment
+  (sh->out "ls" "-la")
+
+  (sh-out->json "curl" "https://xkcd.com/info.0.json"))
