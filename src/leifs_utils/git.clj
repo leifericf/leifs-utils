@@ -1,11 +1,11 @@
 (ns leifs-utils.git
   (:require [babashka.fs :as file]
-            [clojure.edn :as edn]
             [clojure.string :as str]
             [leifs-utils.shell :as shell]
-            [leifs-utils.time :as time]))
+            [leifs-utils.time :as time]
+            [leifs-utils.settings :as settings]))
 
-(def settings (edn/read-string (slurp "settings.edn")))
+(def settings (settings/load "settings.edn"))
 
 (defn get-repo-root-path []
   (str (file/home) (:local/repo-root-dir settings)))
