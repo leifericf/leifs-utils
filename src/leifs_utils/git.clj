@@ -1,19 +1,15 @@
 (ns leifs-utils.git
   (:require [babashka.fs :as file]
             [clojure.string :as str]
+            [leifs-utils.collection :as collection]
+            [leifs-utils.settings :as settings]
             [leifs-utils.shell :as shell]
-            [leifs-utils.time :as time]
-            [leifs-utils.settings :as settings]))
+            [leifs-utils.time :as time]))
 
 (def settings (settings/load "settings.edn"))
 
 (defn get-repo-root-path []
   (str (file/home) (:local/repo-root-dir settings)))
-
-(defn extract-key [key collection]
-  (->> collection
-       (tree-seq coll? identity)
-       (keep key)))
 
 (defn get-devops-project-data
   [org-url]
@@ -29,7 +25,7 @@
   []
   (->> (:azure/devops-org-url settings)
        (get-devops-project-data)
-       (extract-key :id)
+       (collection/extract-values-for :id)
        (pmap get-devops-project-repo-data)
        (doall)))
 
@@ -51,7 +47,7 @@
 (defn clone-all-repos
   [repos]
   (->> repos
-       (extract-key :sshUrl)
+       (collection/extract-values-for :sshUrl)
        (pmap clone-repo)
        (doall)))
 
