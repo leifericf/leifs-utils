@@ -1,9 +1,8 @@
 (ns leifs-utils.git
   (:require [babashka.fs :as file]
-            [babashka.process :as process]
-            [cheshire.core :as json]
             [clojure.edn :as edn]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [leifs-utils.shell :as shell])
   (:import  [java.time ZonedDateTime]
             [java.time.format DateTimeFormatter]))
 
@@ -12,16 +11,6 @@
 (defn get-repo-root-path []
   (str (file/home) (:local/repo-root-dir settings)))
 
-(defn sh->out
-  [opts & args]
-  (-> (apply process/sh opts args)
-      :out))
-
-(defn sh-out->json
-  [opts & args]
-  (-> (apply sh->out opts args)
-      (json/parse-string true)))
-
 (defn extract-key [key collection]
   (->> collection
        (tree-seq coll? identity)
@@ -29,13 +18,13 @@
 
 (defn get-devops-project-data
   [org-url]
-  (sh-out->json "az" "devops" "project" "list"
-                "--org" org-url))
+  (shell/sh-out->json "az" "devops" "project" "list"
+                      "--org" org-url))
 
 (defn get-devops-project-repo-data
   [project-id]
-  (sh-out->json "az" "repos" "list"
-                "--project" project-id))
+  (shell/sh-out->json "az" "repos" "list"
+                      "--project" project-id))
 
 (defn get-devops-repo-data
   []
@@ -47,18 +36,18 @@
 
 (defn get-github-repo-data
   []
-  (sh-out->json "gh" "repo" "list" (:github/org-name settings)
-                "--language" (:github/repo-language-filter settings)
-                "--source"
-                "--no-archived"
-                "--limit" "1000"
-                "--json" "sshUrl"))
+  (shell/sh-out->json "gh" "repo" "list" (:github/org-name settings)
+                      "--language" (:github/repo-language-filter settings)
+                      "--source"
+                      "--no-archived"
+                      "--limit" "1000"
+                      "--json" "sshUrl"))
 
 (defn clone-repo
   [repo-url]
   (let [path (get-repo-root-path)]
     (if-not (file/exists? path) (file/create-dir path) nil)
-    (sh->out {:dir path} "git" "clone" repo-url)))
+    (shell/sh->out {:dir path} "git" "clone" repo-url)))
 
 (defn clone-all-repos
   [repos]
@@ -85,7 +74,7 @@
 
   ([root-path command]
    (->> root-path
-        (pmap #(sh->out {:dir %} "git" command))
+        (pmap #(shell/sh->out {:dir %} "git" command))
         (doall))))
 
 (defn find-files [root-path file-types]
