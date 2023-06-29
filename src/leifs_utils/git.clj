@@ -35,20 +35,20 @@
 
 (defn clone
   [repo-url]
-  (let [path (settings/get-repo-root-path)]
-    (if-not (file/exists? path) (file/create-dir path) nil)
-    (shell/sh->out {:dir path} "git" "clone" repo-url)))
+  (let [dest-path (settings/get-repo-root-path)]
+    (if-not (file/exists? dest-path) (file/create-dir dest-path) nil)
+    (shell/sh->out {:dir dest-path} "git" "clone" repo-url)))
 
 (defn clone-all
-  [repos]
-  (->> repos
+  [repo-urls]
+  (->> repo-urls
        (collection/extract-values-for :sshUrl)
        (pmap clone)
        (doall)))
 
 (defn find-repo-dirs
-  [search-path]
-  (->> (file/glob search-path "**.git" {:hidden true})
+  [root-path]
+  (->> (file/glob root-path "**.git" {:hidden true})
        (map file/parent)
        (map str)))
 
