@@ -7,3 +7,7 @@
 
 (defn format [timestamp pattern]
   (.format timestamp (DateTimeFormatter/ofPattern pattern)))
+
+(comment
+  (-> (now)
+      (format "yyyyMMdd-HHmmss")))
