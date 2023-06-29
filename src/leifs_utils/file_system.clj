@@ -6,6 +6,8 @@
 
 (def settings (settings/load "settings.edn"))
 
+(defn home [] (file/home))
+
 (defn find-files [root-path file-types]
   (file/glob root-path (format "**.{%s}" (apply str/join "," file-types))))
 

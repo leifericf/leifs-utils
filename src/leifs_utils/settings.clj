@@ -1,6 +1,6 @@
 (ns leifs-utils.settings
-  (:require [babashka.fs :as file]
-            [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [leifs-utils.file-system :as file]))
 
 (def settings (load "settings.edn"))
 
