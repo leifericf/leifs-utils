@@ -1,0 +1,5 @@
+{:azure/devops-org-url "https://myorg.visualstudio.com/"
+ :github/org-name "myorg"
+ :github/repo-language-filter "Clojure"
+ :local/repo-root-dir "/my/repo/root"
+ :local/output-dir "/my/output/dir"}
