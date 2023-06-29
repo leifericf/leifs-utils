@@ -54,10 +54,10 @@
 
 (defn run-command
   ([command]
-   (run-command (find-repo-dirs (settings/get-repo-root-path)) command))
+   (run-command command (find-repo-dirs (settings/get-repo-root-path))))
 
-  ([root-path command]
-   (->> root-path
+  ([command repo-dirs]
+   (->> repo-dirs
         (pmap #(shell/sh->out {:dir %} "git" command))
         (doall))))
 
