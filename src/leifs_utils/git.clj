@@ -6,25 +6,25 @@
 
 (def settings (settings/load "settings.edn"))
 
-(defn get-devops-project-data
+(defn get-devops-projects
   [org-url]
   (shell/sh-out->json "az" "devops" "project" "list"
                       "--org" org-url))
 
-(defn get-devops-project-repo-data
+(defn get-devops-repos-for
   [project-id]
   (shell/sh-out->json "az" "repos" "list"
                       "--project" project-id))
 
-(defn get-devops-repo-data
+(defn get-devops-repos
   []
   (->> (:azure/devops-org-url settings)
-       (get-devops-project-data)
+       (get-devops-projects)
        (collection/extract-values-for :id)
-       (pmap get-devops-project-repo-data)
+       (pmap get-devops-repos-for)
        (doall)))
 
-(defn get-github-repo-data
+(defn get-github-repos
   []
   (shell/sh-out->json "gh" "repo" "list" (:github/org-name settings)
                       "--language" (:github/repo-language-filter settings)
@@ -33,28 +33,28 @@
                       "--limit" "1000"
                       "--json" "sshUrl"))
 
-(defn clone-repo
+(defn clone
   [repo-url]
   (let [path (settings/get-repo-root-path)]
     (if-not (file/exists? path) (file/create-dir path) nil)
     (shell/sh->out {:dir path} "git" "clone" repo-url)))
 
-(defn clone-all-repos
+(defn clone-all
   [repos]
   (->> repos
        (collection/extract-values-for :sshUrl)
-       (pmap clone-repo)
+       (pmap clone)
        (doall)))
 
-(defn find-repo-paths
+(defn find-repo-dirs
   [search-path]
   (->> (file/glob search-path "**.git" {:hidden true})
        (map file/parent)
        (map str)))
 
-(defn run-git-command
+(defn run-command
   ([command]
-   (run-git-command (find-repo-paths (settings/get-repo-root-path)) command))
+   (run-command (find-repo-dirs (settings/get-repo-root-path)) command))
 
   ([root-path command]
    (->> root-path
@@ -62,8 +62,8 @@
         (doall))))
 
 (comment
-  (clone-all-repos (get-devops-repo-data))
+  (clone-all (get-devops-repos))
 
-  (clone-all-repos (get-github-repo-data))
+  (clone-all (get-github-repos))
 
-  (run-git-command "status"))
+  (run-command "status"))
