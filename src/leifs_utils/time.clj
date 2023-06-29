@@ -1,0 +1,9 @@
+(ns leifs-utils.time
+  (:import  [java.time ZonedDateTime]
+            [java.time.format DateTimeFormatter]))
+
+(defn now []
+  (ZonedDateTime/now))
+
+(defn format [timestamp pattern]
+  (.format timestamp (DateTimeFormatter/ofPattern pattern)))

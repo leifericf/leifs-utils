@@ -2,9 +2,8 @@
   (:require [babashka.fs :as file]
             [clojure.edn :as edn]
             [clojure.string :as str]
-            [leifs-utils.shell :as shell])
-  (:import  [java.time ZonedDateTime]
-            [java.time.format DateTimeFormatter]))
+            [leifs-utils.shell :as shell]
+            [leifs-utils.time :as time]))
 
 (def settings (edn/read-string (slurp "settings.edn")))
 
@@ -101,16 +100,13 @@
         (pmap #(find-in-file % search-pattern))
         (flatten))))
 
-(defn get-filename-prefix [timestamp]
-  (.format timestamp (DateTimeFormatter/ofPattern "yyyyMMdd-HHmmss")))
-
 (defn write-to-file
   ([filename lines]
    (let [default-path (str (file/home) (:local/output-dir settings))]
      (write-to-file default-path filename lines)))
 
   ([path filename lines]
-   (let [prefixed-filename (format "%s_%s" (get-filename-prefix (ZonedDateTime/now)) filename)]
+   (let [prefixed-filename (format "%s_%s" (time/format (time/now) "yyyyMMdd-HHmmss") filename)]
      (if-not (file/exists? path) (file/create-dirs path) nil)
      (file/write-lines (str path "/" prefixed-filename) lines))))
 
@@ -128,4 +124,4 @@
        (map str)
        (write-to-file "test.txt"))
 
-  (get-filename-prefix (ZonedDateTime/now)))
+  (time/format (time/now) "yyyyMMdd-HHmmss"))
