@@ -1,6 +1,7 @@
 (ns leifs-utils.everything
   (:require
    [leifs-utils.collection :refer :all]
+   ;; Måtte kommentere ut disse fordi de inneholder sykliske avhengigheter!
    ;; [leifs-utils.file-system :refer :all]
    ;; [leifs-utils.git :refer :all]
    ;; [leifs-utils.settings :refer :all]
