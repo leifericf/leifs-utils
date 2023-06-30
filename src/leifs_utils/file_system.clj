@@ -4,9 +4,7 @@
             [leifs-utils.settings :as settings]
             [leifs-utils.time :as time]))
 
-(def settings (settings/load "settings.edn"))
-
-(defn home [] (file/home))
+(def settings (settings/load-edn "settings.edn"))
 
 (defn find-files [root-path file-types]
   (file/glob root-path (format "**.{%s}" (apply str/join "," file-types))))
@@ -37,7 +35,7 @@
      (write-to-file default-path filename lines)))
 
   ([path filename lines]
-   (let [prefixed-filename (format "%s_%s" (time/format (time/now) "yyyyMMdd-HHmmss") filename)]
+   (let [prefixed-filename (format "%s_%s" (time/format-timestamp (time/now) "yyyyMMdd-HHmmss") filename)]
      (if-not (file/exists? path) (file/create-dirs path) nil)
      (file/write-lines (str path "/" prefixed-filename) lines))))
 

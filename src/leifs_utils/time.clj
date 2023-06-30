@@ -5,7 +5,7 @@
 (defn now []
   (ZonedDateTime/now))
 
-(defn format [timestamp pattern]
+(defn format-timestamp [timestamp pattern]
   (.format timestamp (DateTimeFormatter/ofPattern pattern)))
 
 (comment

@@ -4,7 +4,7 @@
             [leifs-utils.settings :as settings]
             [leifs-utils.shell :as shell]))
 
-(def settings (settings/load "settings.edn"))
+(def settings (settings/load-edn "settings.edn"))
 
 (defn get-devops-projects
   [org-url]
